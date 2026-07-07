@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes, viewport-fit=cover">
+  <title>🌸 Permintaan Maaf - Sakura & Love</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: #ffddee;
+      font-family: 'Segoe UI', 'Quicksand', 'Poppins', system-ui, -apple-system, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background-image: 
+        radial-gradient(circle at 20% 30%, #ffb7c5 5%, transparent 15%),
+        radial-gradient(circle at 80% 70%, #ff9eb5 8%, transparent 20%),
+        radial-gradient(circle at 40% 80%, #ff7b9c 6%, transparent 18%),
+        linear-gradient(145deg, #fce4ec 0%, #f8bbd0 100%);
+      background-attachment: fixed;
+      padding: 16px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #sakuraCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .floating-loves {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .love-emoji {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.25;
+      animation: floatLove 10s infinite ease-in-out;
+      user-select: none;
+    }
+
+    @keyframes floatLove {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
+      50% { transform: translateY(-30px) rotate(10deg); opacity: 0.4; }
+      100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
+    }
+
+    .sidebar {
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      width: 100%;
+      max-width: 500px;
+      margin: 10px auto;
+      border-radius: 36px;
+      box-shadow: 0 25px 45px rgba(255, 105, 135, 0.3), 0 8px 20px rgba(0,0,0,0.08);
+      padding: clamp(1.5rem, 5vw, 2.5rem) clamp(1.2rem, 4vw, 2rem);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .sakura-top-emoji {
+      font-size: clamp(2.5rem, 8vw, 4rem);
+      margin-bottom: 0.25rem;
+      filter: drop-shadow(0 6px 10px rgba(255, 105, 180, 0.4));
+      animation: gentleSwing 2.5s infinite alternate;
+      line-height: 1;
+    }
+
+    @keyframes gentleSwing {
+      0% { transform: rotate(-3deg) scale(1); }
+      100% { transform: rotate(4deg) scale(1.05); }
+    }
+
+    .question-text {
+      font-size: clamp(1.3rem, 5vw, 1.9rem);
+      font-weight: 700;
+      color: #d43f6b;
+      margin: 0.5rem 0 1.2rem;
+      letter-spacing: 0.3px;
+      text-shadow: 2px 2px 0 rgba(255, 192, 203, 0.5);
+      word-break: break-word;
+    }
+
+    .video-box {
+      width: 100%;
+      background: #ffeef4;
+      border-radius: 24px;
+      padding: 10px;
+      margin-bottom: 1.2rem;
+      box-shadow: inset 0 0 0 2px #ffb7c5, 0 10px 18px -8px rgba(200, 80, 100, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 180px;
+      overflow: hidden;
+    }
+
+    .video-box-transparent {
+      width: 100%;
+      background: transparent;
+      padding: 0;
+      margin-bottom: 1.2rem;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: visible;
+    }
+
+    .video-stack {
+      position: relative;
+      width: 100%;
+      max-width: 300px;
+      aspect-ratio: 4 / 3;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 3px solid #ff99aa;
+      background: #000;
+    }
+
+    .video-stack-transparent {
+      position: relative;
+      width: 100%;
+      max-width: 300px;
+      aspect-ratio: 4 / 3;
+      border-radius: 18px;
+      overflow: hidden;
+      border: none;
+      background: transparent;
+    }
+
+    .video-stack video,
+    .video-stack-transparent video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 15px;
+      transition: opacity 0.3s ease;
+    }
+
+    .video-stack video.active,
+    .video-stack-transparent video.active {
+      opacity: 1;
+      z-index: 2;
+    }
+
+    .video-stack video.inactive,
+    .video-stack-transparent video.inactive {
+      opacity: 0;
+      z-index: 1;
+    }
+
+    .button-row {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+      gap: clamp(15px, 4vw, 30px);
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+      position: relative;
+      min-height: 70px;
+    }
+
+    .btn-yes {
+      background: #ff7b9c;
+      border: none;
+      color: white;
+      font-weight: 700;
+      font-size: clamp(1.3rem, 5vw, 1.9rem);
+      padding: 0.7rem 2rem;
+      border-radius: 60px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(255, 105, 135, 0.4);
+      transition: all 0.2s ease;
+      border: 2px solid #ff4f7a;
+      letter-spacing: 0.5px;
+      z-index: 30;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .btn-yes:active {
+      transform: scale(0.94);
+      background: #ff5277;
+    }
+
+    @media (hover: hover) {
+      .btn-yes:hover {
+        background: #ff5277;
+        transform: scale(1.05);
+        box-shadow: 0 12px 24px #ff99aa;
+      }
+    }
+
+    .btn-no {
+      background: #ffffff;
+      color: #ff4f7a;
+      border: 3px dashed #ff7b9c;
+      font-weight: 700;
+      font-size: clamp(1.3rem, 5vw, 1.9rem);
+      padding: 0.7rem 2rem;
+      border-radius: 60px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(255, 105, 135, 0.5), 0 0 0 4px rgba(255, 255, 255, 0.8);
+      transition: all 0.08s ease;
+      position: relative;
+      z-index: 9999 !important;
+      background: #ffffff;
+      white-space: nowrap;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      outline: none;
+    }
+
+    .btn-no:active {
+      transform: scale(0.9);
+      box-shadow: 0 4px 14px rgba(255, 105, 135, 0.6), 0 0 0 6px rgba(255, 255, 255, 0.9);
+    }
+
+    /* Button Next & Kembali */
+    .btn-next,
+    .btn-back {
+      background: white;
+      color: #ff4f7a;
+      border: 2px solid #ffb7c5;
+      font-weight: 700;
+      font-size: clamp(1rem, 4vw, 1.3rem);
+      padding: 0.7rem 2.2rem;
+      border-radius: 60px;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(255, 105, 135, 0.25);
+      transition: all 0.2s ease;
+      margin-top: 0.8rem;
+      letter-spacing: 0.5px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .btn-next:active,
+    .btn-back:active {
+      transform: scale(0.94);
+      background: #fff5f7;
+    }
+
+    @media (hover: hover) {
+      .btn-next:hover,
+      .btn-back:hover {
+        background: #fff0f3;
+        transform: scale(1.03);
+        box-shadow: 0 10px 22px rgba(255, 105, 135, 0.35);
+      }
+    }
+
+    .success-emoji {
+      font-size: clamp(2.8rem, 9vw, 4.5rem);
+      margin-bottom: 0.2rem;
+      line-height: 1.2;
+    }
+
+    .thankyou-text {
+      font-size: clamp(1.5rem, 6vw, 2.2rem);
+      font-weight: 700;
+      color: #e8436f;
+      margin: 0.3rem 0;
+      word-break: break-word;
+    }
+
+    .love-row {
+      font-size: clamp(1.5rem, 5vw, 2.2rem);
+      margin: 0.3rem 0 0.6rem;
+      letter-spacing: 2px;
+    }
+
+    .gombalan-text {
+      font-size: clamp(0.95rem, 3.5vw, 1.25rem);
+      color: #b3415c;
+      background: #fff0f3;
+      padding: 0.9rem 1rem;
+      border-radius: 20px;
+      margin: 0.6rem 0 1rem;
+      font-style: italic;
+      line-height: 1.7;
+      border: 1px dashed #ff99aa;
+      word-break: break-word;
+    }
+
+    /* Style untuk halaman pesan */
+    .message-title {
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      font-weight: 700;
+      color: #e8436f;
+      margin: 0.5rem 0 1.2rem;
+      word-break: break-word;
+      text-shadow: 1px 1px 0 rgba(255, 192, 203, 0.3);
+    }
+
+    .message-text {
+      font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+      color: #b3415c;
+      background: #fff0f3;
+      padding: 1.2rem 1rem;
+      border-radius: 20px;
+      margin: 0.4rem 0 1.2rem;
+      line-height: 1.8;
+      border: 1px dashed #ff99aa;
+      word-break: break-word;
+      text-align: left;
+      white-space: pre-line;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media screen and (max-width: 480px) {
+      body {
+        padding: 10px;
+        align-items: flex-start;
+        padding-top: 20px;
+      }
+
+      .sidebar {
+        border-radius: 28px;
+        padding: 1.4rem 1rem 1.8rem;
+        margin: 5px auto;
+      }
+
+      .video-box {
+        padding: 6px;
+        border-radius: 18px;
+        min-height: 150px;
+      }
+
+      .video-stack,
+      .video-stack-transparent {
+        max-width: 100%;
+        border-radius: 14px;
+      }
+
+      .button-row {
+        gap: 12px;
+        min-height: 60px;
+      }
+
+      .btn-yes,
+      .btn-no {
+        padding: 0.6rem 1.5rem;
+        font-size: clamp(1.1rem, 4.5vw, 1.5rem);
+      }
+
+      .btn-next,
+      .btn-back {
+        padding: 0.6rem 1.6rem;
+        font-size: 1rem;
+      }
+
+      .love-emoji {
+        font-size: 1.4rem;
+      }
+    }
+
+    @media screen and (max-width: 360px) {
+      .sidebar {
+        padding: 1.2rem 0.8rem 1.5rem;
+        border-radius: 24px;
+      }
+
+      .btn-yes,
+      .btn-no {
+        padding: 0.55rem 1.2rem;
+        gap: 3px;
+      }
+    }
+
+    @media screen and (min-width: 768px) and (max-width: 1024px) {
+      .sidebar {
+        max-width: 550px;
+        padding: 2.2rem 2rem 2.5rem;
+      }
+    }
+
+    @media screen and (min-width: 1200px) {
+      .sidebar {
+        max-width: 520px;
+      }
+    }
+
+    @supports (padding: max(0px)) {
+      body {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+        padding-bottom: max(16px, env(safe-area-inset-bottom));
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="sakuraCanvas"></canvas>
+  <div class="floating-loves" id="loveContainer"></div>
+
+  <div class="sidebar" id="mainSidebar">
+    <!-- Halaman 1: Permintaan Maaf -->
+    <div id="apologyContent">
+      <div class="sakura-top-emoji">🌸</div>
+      <div class="question-text">Apakah kamu memaafkan aku?</div>
+      
+      <div class="video-box">
+        <div class="video-stack" id="cryVideoStack">
+          <video class="active" muted playsinline loop preload="auto">
+            <source src="nangis1.mp4" type="video/mp4">
+          </video>
+          <video class="inactive" muted playsinline loop preload="auto">
+            <source src="nangis2.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+      <div class="button-row" id="buttonContainer">
+        <button class="btn-yes" id="yesButton">Yes</button>
+        <button class="btn-no" id="noButton">No</button>
+      </div>
+    </div>
+
+    <!-- Halaman 2: Success / Video Joget -->
+    <div id="successContent" class="hidden">
+      <div class="success-emoji">🎉</div>
+      <div class="thankyou-text">Yayy, Terima kasih!</div>
+      <div class="gombalan-text">
+        "nyesel banget dulu ngga mendalami pelajaran kimia, sekarang aku ngga bisa ngitung kadar gula yang terkandung dalam senyumanmu"
+      </div>
+      <div class="video-box-transparent">
+        <div class="video-stack-transparent">
+          <video class="active" muted playsinline loop preload="auto">
+            <source src="joget.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <button class="btn-next" id="nextButton">Next</button>
+    </div>
+
+    <!-- Halaman 3: Pesan untuk Kamu -->
+    <div id="messageContent" class="hidden">
+      <div class="message-title">Pesan untuk kamu</div>
+      <div class="message-text" id="customMessage">
+        Maaf aku sampaikan pesan dengan buat website ini, Maafin aku juga yahh, aku bukannya ngga mau chat kamu duluan tapi aku malu atas kesalahan yang telah aku buat selama ini, aku malu karena buat kamu marah sampai segitunya. Kamu tau ngga?? aku itu pengen banget chat kamu nanyain kabar kamu, tapi aku ngga bisa karena aku takut nyakitin hati kamu lagi, jadi aku mau kamu lupain aku yahh, aku bukannya ngga sayang kamu, aku masih sayang banget malah, tapi difikiran aku sekarang meski kita mulai hubungan dari awal lagi "apakah kamu emang bener jodoh aku kelak??", aku ngga mau ada yang sakit hati lagi diantara kita, aku mengakui kesalah aku yang sangat sangat tidak pantas untuk ada di samping kamu, jadi yahh.. see you Dinda, Terima kasih banyakk Telah menerima aku apa adanya selama ini, jika kita jodoh pasti Allah mempertemukan kita lagi kok😊.
+      </div>
+      <button class="btn-back" id="backButton">Kembali</button>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ============ KONFIGURASI VIDEO ============
+      const cryVideoSources = [
+        "nangis1.mp4",
+        "nangis2.mp4",
+        "nangis3.mp4",
+        "nangis4.mp4"
+      ];
+      
+      const danceVideoSrc = "joget.mp4";
+
+      // ============ ELEMEN DOM ============
+      const cryVideoStack = document.getElementById('cryVideoStack');
+      const yesButton = document.getElementById('yesButton');
+      const nextButton = document.getElementById('nextButton');
+      const backButton = document.getElementById('backButton');
+      const apologyContent = document.getElementById('apologyContent');
+      const successContent = document.getElementById('successContent');
+      const messageContent = document.getElementById('messageContent');
+      
+      // Ambil button NO langsung
+      let noButton = document.getElementById('noButton');
+      
+      let currentCryIndex = 0;
+      let cryVideoElements = [];
+
+      // ============ INISIALISASI STACK VIDEO NANGIS ============
+      function initCryVideoStack() {
+        if (!cryVideoStack) return;
+        
+        cryVideoStack.innerHTML = '';
+        cryVideoElements = [];
+        
+        for (let i = 0; i < 2; i++) {
+          const video = document.createElement('video');
+          video.muted = true;
+          video.playsInline = true;
+          video.loop = true;
+          video.preload = 'auto';
+          video.className = i === 0 ? 'active' : 'inactive';
+          video.setAttribute('playsinline', '');
+          
+          const source = document.createElement('source');
+          source.src = cryVideoSources[i] || cryVideoSources[0];
+          source.type = 'video/mp4';
+          video.appendChild(source);
+          
+          cryVideoStack.appendChild(video);
+          cryVideoElements.push(video);
+          
+          video.play().catch(() => {});
+        }
+        
+        currentCryIndex = 0;
+      }
+
+      // ============ GANTI VIDEO NANGIS ============
+      function changeCryVideo() {
+        if (!cryVideoStack || cryVideoElements.length < 2) {
+          initCryVideoStack();
+          if (cryVideoElements.length < 2) return;
+        }
+        
+        const nextIndex = (currentCryIndex + 1) % cryVideoSources.length;
+        
+        const activeVideo = cryVideoElements.find(v => v.classList.contains('active'));
+        const inactiveVideo = cryVideoElements.find(v => v.classList.contains('inactive'));
+        
+        if (!activeVideo || !inactiveVideo) return;
+        
+        const source = inactiveVideo.querySelector('source');
+        if (source) {
+          source.src = cryVideoSources[nextIndex];
+          inactiveVideo.load();
+          
+          const switchVideo = () => {
+            inactiveVideo.removeEventListener('canplay', switchVideo);
+            
+            activeVideo.classList.remove('active');
+            activeVideo.classList.add('inactive');
+            inactiveVideo.classList.remove('inactive');
+            inactiveVideo.classList.add('active');
+            
+            inactiveVideo.play().catch(() => {});
+            activeVideo.pause();
+          };
+          
+          inactiveVideo.addEventListener('canplay', switchVideo, { once: true });
+          
+          setTimeout(() => {
+            if (inactiveVideo.classList.contains('inactive')) {
+              switchVideo();
+            }
+          }, 300);
+        }
+        
+        currentCryIndex = nextIndex;
+      }
+
+      // ============ GERAKAN BUTTON NO ============
+      function moveNoButton() {
+        // Selalu dapatkan button terbaru
+        noButton = document.getElementById('noButton');
+        if (!noButton) return;
+        
+        // Pastikan button visible
+        noButton.style.display = 'inline-flex';
+        noButton.style.visibility = 'visible';
+        noButton.style.opacity = '1';
+        
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        
+        const btnWidth = noButton.offsetWidth || 130;
+        const btnHeight = noButton.offsetHeight || 60;
+        
+        const edgePadding = 15;
+        
+        const safeLeft = edgePadding;
+        const safeRight = Math.max(safeLeft + 10, vw - btnWidth - edgePadding);
+        const safeTop = edgePadding;
+        const safeBottom = Math.max(safeTop + 10, vh - btnHeight - edgePadding);
+        
+        let randomLeft, randomTop;
+        let validPosition = false;
+        let attempts = 0;
+        const maxAttempts = 200;
+        const sidebarEl = document.getElementById('mainSidebar');
+        
+        while (!validPosition && attempts < maxAttempts) {
+          randomLeft = safeLeft + Math.random() * (safeRight - safeLeft);
+          randomTop = safeTop + Math.random() * (safeBottom - safeTop);
+          
+          validPosition = true;
+          
+          if (sidebarEl && apologyContent && !apologyContent.classList.contains('hidden')) {
+            const sidebarRect = sidebarEl.getBoundingClientRect();
+            
+            const forbiddenLeft = sidebarRect.left - 40;
+            const forbiddenRight = sidebarRect.right + 40;
+            const forbiddenTop = sidebarRect.top - 40;
+            const forbiddenBottom = sidebarRect.bottom + 40;
+            
+            const btnLeft = randomLeft;
+            const btnRight = randomLeft + btnWidth;
+            const btnTop = randomTop;
+            const btnBottom = randomTop + btnHeight;
+            
+            if (btnLeft < forbiddenRight && btnRight > forbiddenLeft &&
+                btnTop < forbiddenBottom && btnBottom > forbiddenTop) {
+              validPosition = false;
+            }
+          }
+          
+          attempts++;
+        }
+        
+        // Terapkan posisi dengan !important via setProperty
+        noButton.style.setProperty('position', 'fixed', 'important');
+        noButton.style.setProperty('left', randomLeft + 'px', 'important');
+        noButton.style.setProperty('top', randomTop + 'px', 'important');
+        noButton.style.setProperty('z-index', '99999', 'important');
+        noButton.style.margin = '0';
+        noButton.style.transition = 'left 0.1s ease, top 0.1s ease';
+      }
+
+      function handleNoClick(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Ganti video
+        changeCryVideo();
+        
+        // Pindahkan tombol
+        moveNoButton();
+        
+        // Update reference setelah move
+        noButton = document.getElementById('noButton');
+        if (!noButton) return;
+        
+        // Efek visual
+        noButton.style.transform = 'scale(0.85)';
+        noButton.style.borderStyle = 'solid';
+        noButton.style.borderColor = '#ff4f7a';
+        
+        setTimeout(() => {
+          noButton = document.getElementById('noButton');
+          if (noButton) {
+            noButton.style.transform = 'scale(1)';
+            noButton.style.borderStyle = 'dashed';
+            noButton.style.borderColor = '#ff7b9c';
+          }
+        }, 200);
+      }
+
+      // ============ ATTACH EVENT LISTENER KE NO BUTTON ============
+      function attachNoButtonEvents() {
+        noButton = document.getElementById('noButton');
+        if (!noButton) return;
+        
+        // Hapus event lama dengan clone
+        const newButton = noButton.cloneNode(true);
+        noButton.parentNode.replaceChild(newButton, noButton);
+        noButton = newButton;
+        
+        // Event listener baru
+        noButton.addEventListener('click', handleNoClick);
+        noButton.addEventListener('touchstart', function(e) {
+          e.preventDefault();
+          handleNoClick(e);
+        }, {passive: false});
+        
+        noButton.addEventListener('touchmove', function(e) {
+          e.preventDefault();
+        }, {passive: false});
+        
+        // Mouse enter untuk mencegah hilang
+        noButton.addEventListener('mouseenter', function() {
+          this.style.setProperty('z-index', '99999', 'important');
+        });
+      }
+
+      // ============ FUNGSI YES ============
+      function handleYesClick() {
+        if (apologyContent) apologyContent.classList.add('hidden');
+        if (successContent) successContent.classList.remove('hidden');
+        if (messageContent) messageContent.classList.add('hidden');
+        
+        const danceVideoElement = successContent.querySelector('video');
+        if (danceVideoElement) {
+          danceVideoElement.play().catch(() => {});
+        }
+        
+        cryVideoElements.forEach(v => v.pause());
+        
+        noButton = document.getElementById('noButton');
+        if (noButton) {
+          noButton.style.display = 'none';
+        }
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      if (yesButton) {
+        yesButton.addEventListener('click', handleYesClick);
+        yesButton.addEventListener('touchstart', function(e) {
+          e.preventDefault();
+          handleYesClick();
+        }, {passive: false});
+      }
+
+      // ============ FUNGSI NEXT ============
+      function handleNextClick() {
+        if (successContent) successContent.classList.add('hidden');
+        if (messageContent) messageContent.classList.remove('hidden');
+        if (apologyContent) apologyContent.classList.add('hidden');
+        
+        // Pause video joget
+        const danceVideoElement = successContent.querySelector('video');
+        if (danceVideoElement) {
+          danceVideoElement.pause();
+        }
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      if (nextButton) {
+        nextButton.addEventListener('click', handleNextClick);
+        nextButton.addEventListener('touchstart', function(e) {
+          e.preventDefault();
+          handleNextClick();
+        }, {passive: false});
+      }
+
+      // ============ FUNGSI KEMBALI (dari halaman pesan ke halaman maaf) ============
+      function handleBackClick() {
+        // Sembunyikan semua halaman
+        if (successContent) successContent.classList.add('hidden');
+        if (messageContent) messageContent.classList.add('hidden');
+        
+        // Tampilkan halaman permintaan maaf
+        if (apologyContent) apologyContent.classList.remove('hidden');
+        
+        noButton = document.getElementById('noButton');
+        if (noButton) {
+          noButton.style.display = 'inline-flex';
+          noButton.style.visibility = 'visible';
+          noButton.style.opacity = '1';
+          // Reset semua style posisi
+          noButton.style.position = 'relative';
+          noButton.style.left = 'auto';
+          noButton.style.top = 'auto';
+          noButton.style.zIndex = '9999';
+          noButton.style.margin = '';
+          noButton.style.transform = 'scale(1)';
+          noButton.style.borderStyle = 'dashed';
+          noButton.style.borderColor = '#ff7b9c';
+        }
+        
+        const activeCryVideo = cryVideoElements.find(v => v.classList.contains('active'));
+        if (activeCryVideo) {
+          activeCryVideo.currentTime = 0;
+          activeCryVideo.play().catch(() => {});
+        }
+        
+        // Pause video joget juga
+        const danceVideoElement = successContent.querySelector('video');
+        if (danceVideoElement) {
+          danceVideoElement.pause();
+        }
+        
+        // Re-attach events setelah kembali
+        setTimeout(attachNoButtonEvents, 100);
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      if (backButton) {
+        backButton.addEventListener('click', handleBackClick);
+        backButton.addEventListener('touchstart', function(e) {
+          e.preventDefault();
+          handleBackClick();
+        }, {passive: false});
+      }
+
+      // ============ CANVAS SAKURA ============
+      const canvas = document.getElementById('sakuraCanvas');
+      const ctx = canvas.getContext('2d');
+      
+      let width, height;
+      const petals = [];
+      const MAX_PETALS = window.innerWidth < 480 ? 35 : 55;
+      
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+      }
+      
+      window.addEventListener('resize', () => {
+        resizeCanvas();
+        noButton = document.getElementById('noButton');
+        if (noButton && noButton.style.position === 'fixed') {
+          noButton.style.position = 'relative';
+          noButton.style.left = 'auto';
+          noButton.style.top = 'auto';
+        }
+      });
+      
+      window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+          resizeCanvas();
+          noButton = document.getElementById('noButton');
+          if (noButton && noButton.style.position === 'fixed') {
+            noButton.style.position = 'relative';
+            noButton.style.left = 'auto';
+            noButton.style.top = 'auto';
+          }
+        }, 300);
+      });
+      
+      resizeCanvas();
+      
+      class SakuraPetal {
+        constructor() {
+          this.reset(true);
+        }
+        
+        reset(initial = false) {
+          this.x = Math.random() * width;
+          this.y = initial ? Math.random() * height : height + 20 + Math.random() * 80;
+          this.size = Math.random() * 16 + 8;
+          this.speedY = Math.random() * 1.6 + 0.6;
+          this.speedX = (Math.random() - 0.5) * 0.8;
+          this.rotation = Math.random() * Math.PI * 2;
+          this.rotationSpeed = (Math.random() - 0.5) * 0.025;
+          this.opacity = Math.random() * 0.45 + 0.45;
+        }
+        
+        update() {
+          this.y -= this.speedY;
+          this.x += this.speedX + Math.sin(this.y * 0.01) * 0.2;
+          this.rotation += this.rotationSpeed;
+          
+          if (this.y < -30) {
+            this.y = height + 25 + Math.random() * 50;
+            this.x = Math.random() * width;
+          }
+          
+          if (this.x > width + 20) this.x = -20;
+          if (this.x < -20) this.x = width + 20;
+        }
+        
+        draw(ctx) {
+          ctx.save();
+          ctx.translate(this.x, this.y);
+          ctx.rotate(this.rotation);
+          ctx.fillStyle = `rgba(255, 140, 170, ${this.opacity})`;
+          ctx.shadowColor = 'rgba(255, 150, 180, 0.5)';
+          ctx.shadowBlur = 6;
+          
+          const s = this.size;
+          ctx.beginPath();
+          for (let i = 0; i < 5; i++) {
+            const angle = (i * 2 * Math.PI) / 5 - Math.PI/2;
+            const px = Math.cos(angle) * s * 0.6;
+            const py = Math.sin(angle) * s * 0.6;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          ctx.fill();
+          
+          ctx.fillStyle = '#ffd1dc';
+          ctx.shadowBlur = 4;
+          ctx.beginPath();
+          ctx.arc(0, 0, s * 0.22, 0, Math.PI*2);
+          ctx.fill();
+          
+          ctx.restore();
+        }
+      }
+      
+      for (let i = 0; i < MAX_PETALS; i++) {
+        petals.push(new SakuraPetal());
+      }
+      
+      function animateSakura() {
+        ctx.clearRect(0, 0, width, height);
+        for (let p of petals) {
+          p.update();
+          p.draw(ctx);
+        }
+        requestAnimationFrame(animateSakura);
+      }
+      
+      animateSakura();
+      
+      // ============ EMOJI LOVE BACKGROUND ============
+      const loveContainer = document.getElementById('loveContainer');
+      const loveEmojis = ['💗', '💖', '💘', '💞', '🌸', '❤️'];
+      
+      function createLoveEmojis() {
+        if (!loveContainer) return;
+        loveContainer.innerHTML = '';
+        const count = window.innerWidth < 480 ? 18 : 28;
+        for (let i = 0; i < count; i++) {
+          const span = document.createElement('span');
+          span.className = 'love-emoji';
+          span.textContent = loveEmojis[Math.floor(Math.random() * loveEmojis.length)];
+          span.style.left = Math.random() * 100 + '%';
+          span.style.top = Math.random() * 100 + '%';
+          span.style.fontSize = (Math.random() * 25 + 14) + 'px';
+          span.style.animationDelay = Math.random() * 8 + 's';
+          span.style.animationDuration = (Math.random() * 12 + 8) + 's';
+          loveContainer.appendChild(span);
+        }
+      }
+      
+      createLoveEmojis();
+      
+      // ============ INISIALISASI AKHIR ============
+      window.addEventListener('load', () => {
+        initCryVideoStack();
+        resizeCanvas();
+        attachNoButtonEvents();
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          const activeCryVideo = cryVideoElements.find(v => v.classList.contains('active'));
+          if (activeCryVideo && apologyContent && !apologyContent.classList.contains('hidden')) {
+            activeCryVideo.play().catch(() => {});
+          }
+        }
+      });
+
+      // ============ SAFETY NET: Cek button setiap 500ms ============
+      setInterval(() => {
+        noButton = document.getElementById('noButton');
+        if (noButton && apologyContent && !apologyContent.classList.contains('hidden')) {
+          if (noButton.style.display === 'none' || noButton.style.visibility === 'hidden') {
+            noButton.style.display = 'inline-flex';
+            noButton.style.visibility = 'visible';
+            noButton.style.opacity = '1';
+          }
+        }
+      }, 500);
+
+    })();
+  </script>
+</body>
+</html>
